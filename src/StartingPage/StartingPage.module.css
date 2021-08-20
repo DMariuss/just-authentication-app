@@ -1,0 +1,12 @@
+.homepage {
+  text-align: center;
+  margin: 3rem auto;
+}
+.title {
+  font-size: 3rem;
+}
+.description {
+  margin: 2rem;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
