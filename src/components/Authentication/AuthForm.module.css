@@ -7,6 +7,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   padding: 1rem;
   text-align: center;
+  color: white;
 }
 
 .auth h1 {
@@ -35,6 +36,7 @@
   width: 100%;
   text-align: left;
   padding: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .actions {
@@ -70,4 +72,14 @@
 .actions .toggle:hover {
   background-color: transparent;
   color: #ae82cc;
+}
+
+.invalid p {
+  text-align: left;
+}
+.invalid label {
+  color: red;
+}
+.invalid input {
+  border-color: red;
 }

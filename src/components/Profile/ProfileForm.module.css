@@ -22,6 +22,7 @@
   border-radius: 4px;
   border: 1px solid #03045e;
   padding: 0.25rem;
+  margin-bottom: 0.3rem;
   background-color: #f7f0fa;
 }
 
@@ -43,4 +44,14 @@
 .action button:hover {
   background-color: #540d83;
   border-color: #540d83;
+}
+
+.invalid p {
+  text-align: left;
+}
+.invalid label {
+  color: red;
+}
+.invalid input {
+  border-color: red;
 }
