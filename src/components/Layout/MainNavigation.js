@@ -1,5 +1,6 @@
 import classes from "./MainNavigation.module.css";
 import { Link } from "react-router-dom";
+// import AuthContext from "../../store/auth-context_clear";
 import AuthContext from "../../store/auth-context";
 import { useContext } from "react";
 import { useHistory } from "react-router-dom";

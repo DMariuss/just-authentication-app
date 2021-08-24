@@ -1,8 +1,10 @@
 import classes from "./AuthForm.module.css";
 import { useState, useRef, useContext } from "react";
+// import AuthContext from "../../store/auth-context_clear";
 import AuthContext from "../../store/auth-context";
 //folosesc un hook din react-router-dom pt a redirectiona catre o alta pagina in momentul in care ma loghez
 import { useHistory } from "react-router-dom";
+import ErrorModal from "./ErrorModal";
 
 export const API_KEY = "AIzaSyBHHNgSX1Ld1tFRzQjwAlW5azBCAJDIRG0";
 
@@ -17,6 +19,7 @@ const AuthForm = () => {
   });
   //stare pt incarcare
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState({ message: null, hasError: false });
   // 🢣 pt preluarea valorilor inputurilor
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -46,7 +49,6 @@ const AuthForm = () => {
     }
 
     setIsLoading(true);
-
     //pt ca la fiecare solicitare se schimba doar url-ul pot crea o variabila si scrie cod cu un singur fetch()
     let url;
     if (isLogin) {
@@ -90,12 +92,24 @@ const AuthForm = () => {
         }
       })
       .then((data) => {
+        //modific timpul primit de la server pt a-l trimite corect
+        const expirationDate = new Date(
+          new Date().getTime() + data.expiresIn * 1000
+        );
         //obiectul cu datele corecte 🢣 preiau token-ul;
-        authContext.login(data.idToken);
+        authContext.login(data.idToken, expirationDate);
         // 🢣 si redirectionez catre pagina principala
         history.replace("/"); // 🢣.replace pt ca nu vreau sa utiliz. sa fie capabil sa se reintoarca la pagina precedenta cu butonul de back
       })
-      .catch((err) => alert(err));
+      .catch((err) => {
+        // alert(err);
+        setError({ message: err.message, hasError: true });
+      });
+  };
+
+  //gestionez eroarea primita de la server
+  const clearErrorHandler = () => {
+    setError({ ...error, hasError: false });
   };
 
   const emailClasses = `${classes.control} ${
@@ -144,6 +158,7 @@ const AuthForm = () => {
           </button>
         </div>
       </form>
+      <ErrorModal error={error} onClearError={clearErrorHandler} />
     </section>
   );
 };

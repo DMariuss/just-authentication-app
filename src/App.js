@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import AuthPage from "./pages/AuthPage";
 import UserPage from "./pages/UserPage";
 import AuthContext from "./store/auth-context";
+// import AuthContext from "./store/auth-context_clear";
 import { useContext } from "react";
 
 function App() {

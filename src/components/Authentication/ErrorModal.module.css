@@ -1,0 +1,17 @@
+.error-button {
+  cursor: pointer;
+  font: inherit;
+  color: white;
+  background-color: #7209b7;
+  border: 1px solid #7209b7;
+  border-radius: 4px;
+  padding: 0.3rem 1.5rem;
+}
+.error-text {
+  margin: 1rem 0;
+}
+
+.error-button:hover {
+  background-color: #873abb;
+  border-color: #873abb;
+}

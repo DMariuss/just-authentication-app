@@ -57,31 +57,18 @@ const retrieveStorageData = () => {
 let loginTimer;
 
 export const AuthContextProvider = (props) => {
-  const tokenData = retrieveStorageData();
-  //situatia este ca atunci cand ma loghez, functia aceasta se executa din nou(pt ca se executa reevaluarea codului) ..dar nu apuca sa preia valorile din
-  // localStorage(DE CE? PT CA ... vezi in LOGIN explicatia)  🢣 idToken= null la login 🢣 conform acestei logici
-  console.log("tokenData: ", tokenData);
-  console.log("reevaluation of this ");
-  let id_token;
-  if (tokenData) {
-    id_token = tokenData.idToken;
-    //ar trebui sa temporizez delogarea automata 🢣 pt ca nu vreau sa reimprospatez token-ul acum ...
-    //nu pot asta aici, asa ca o sa folosesc useEffect() pt efectele secundare ale dependentelor.
-  }
-
-  const [token, setToken] = useState(id_token); // 🢣 daca nu exista va fi null
+  //   const initialToken = localStorage.getItem("id_token"); //combinata cu varianta cealalta din useEFfect
+  const [token, setToken] = useState(null); // 🢣 daca nu exista va fi null
 
   //nu mai avem nevoie de o alta stare pt a verifica daca utilizatorul este sau nu logat 🢣
   // verificam daca avem sau nu token-ul
   const userIsLoggedIn = !!token; // daca token-ul este gol 🢣 false (practic verific daca am sau nu tokenul)
 
   const logoutHandler = useCallback(() => {
+    console.log("Successfully logged out!");
+    localStorageModifier({ type: "remove", payload: ["id_token", "exp_date"] });
     //golesc starea ce mentine token-ul
     setToken(null);
-    console.log("Successfully logged out!");
-    // localStorage.removeItem("id_token");
-    // localStorage.removeItem("exp_date");
-    localStorageModifier({ type: "remove", payload: ["id_token", "exp_date"] });
 
     if (loginTimer) {
       clearTimeout(loginTimer);
@@ -90,16 +77,12 @@ export const AuthContextProvider = (props) => {
 
   //funtie pe o apelez pt a prelua token-ul si a retine starea de logg-in
   const loginHandler = (token, expirationDate) => {
-    //preiau token-ul
-    setToken(token); // --continuare de mai sus--  pt ca am setat starea inainte de declaratiile de mai jos
-    // localStorage.setItem("id_token", token);
-    // localStorage.setItem("exp_date", expirationDate);
     localStorageModifier({
       type: "set",
       payload: { id_token: token, exp_date: expirationDate },
     });
-    //daca mut setToken(token) aici, atunci se schimba lucrurile ...se va executa functia de retrieveStorageData care va prelua aceste date din storage(deci nu
-    //  va mai fi null => se va executa if-ul din useEffect... asa ca momentan il las tot cum era pus)
+    //preiau token-ul
+    setToken(token);
 
     const remainingTime = calculateRemainingTime(expirationDate);
 
@@ -119,18 +102,31 @@ export const AuthContextProvider = (props) => {
   //   const id_token = localStorage.getItem("id_token");
   //   if (id_token !== "") {
   //     setToken(id_token);
-  //   }
+  //   } ⇧  o varianta initiala  🢣 🢣 🢣 🢣 🢣 poate fi pusa intr-o functie externa si verificata (cum am facut mai sus)
   // }, []);
 
   //cand reincarc pagina vreau sa inchid vechiul timer
   useEffect(() => {
-    console.log("in UseEffect");
+    const tokenData = retrieveStorageData();
     if (tokenData) {
-      console.log("in UseEffect tokenDATA");
-
+      setToken(tokenData.idToken);
       loginTimer = setTimeout(logoutHandler, tokenData.remainingTime);
     }
-  }, [tokenData, logoutHandler]);
+
+    // console.log("in useEffect again");
+    // if (token) {
+    //   console.log("a intrat pe token useEffect");
+    //   const expirationDate = localStorage.getItem("exp_date");
+    //   let remainingTime = calculateRemainingTime(expirationDate);
+
+    //   if (remainingTime < 10 * 60 * 1000) {
+    //     remainingTime = 0;
+    //   }
+    //   loginTimer = setTimeout(logoutHandler, remainingTime);
+    // }   ⇧ ⇧ ⇧ varianta care depinde de token-ul din stare si care se evalueaza la orice modificare -este mai greoaie
+
+    return () => clearTimeout(loginTimer);
+  }, [logoutHandler]);
   // 🢣 se va intra pe acest useEffect() de fiecare data pt ca tokenData este definit de fiecare data cand se reevalueaza componenta.
 
   return (
