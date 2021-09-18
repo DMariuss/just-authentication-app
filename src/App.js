@@ -11,7 +11,7 @@ import { useContext } from "react";
 function App() {
   const authContext = useContext(AuthContext);
 
-  //putem gestiona rutele in functie de starea de autentificare *********************** route guarding 🢣 protejarea rutelor din url...
+  //putem gestiona rutele in functie de starea de autentificare *********************** route guarding 🢣 protejarea rutelor din url....
 
   return (
     <Layout>
